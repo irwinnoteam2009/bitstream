@@ -7,35 +7,19 @@ import (
 )
 
 func TestBitReader(t *testing.T) {
-	data := []byte{0x65} // 01100101
+	data := []byte{0x65, 0x65, 0x65} // 01100101 01100101 01100101
 
-	testCases := []struct {
-		readBit     bool
-		count       int
-		expectedArr []byte
-		expected    uint64
-	}{
-		{
-			readBit: true,
-			count:   6,
-		},
-	}
+	r := NewReader(bytes.NewBuffer(data))
+	b, _ := r.ReadBits(2)
+	fmt.Printf("2>>%b\n", b)
+	ub, _ := r.ReadByte()
+	fmt.Printf("8>>%b\n", ub)
+	b, _ = r.ReadBits(13)
+	fmt.Printf("13>>%b\n", b)
+	bb, _ := r.ReadBit()
+	fmt.Printf("1>>%b\n", bb)
 
-	for _, test := range testCases {
-		r := NewReader(bytes.NewBuffer(data))
-		fmt.Printf("data: %b\n", data)
-		var b byte
-		var err error
-		if test.readBit {
-			b, _ := r.ReadBits(test.count)
-			fmt.Printf("b: %b\n", b)
-		} else {
-			b, err = r.ReadByte()
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		fmt.Printf("b: %b\n", b)
-	}
+	xb, err := r.ReadBits(4)
+	fmt.Println("error?", err, xb)
 	t.Fatal("OK")
 }
