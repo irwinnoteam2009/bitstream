@@ -1,7 +1,6 @@
 package bitstream
 
 import (
-	"fmt"
 	"io"
 )
 
@@ -21,21 +20,20 @@ func NewReader(r io.Reader) *Reader {
 func (r *Reader) ReadBit() (byte, error) {
 	if r.count == 0 {
 		if n, err := r.Read(r.data[:]); err != nil || n == 0 {
-			fmt.Println(n, err)
 			return 0, err
 		}
 		r.count = 8
 	}
 	r.count--
-	fmt.Println("count", r.count)
 
 	d := r.data[0] & 0x80 // get first bit. 0x80 = 10000000
 	r.data[0] <<= 1
-	fmt.Printf("r.data[0]: %b\n", r.data[0])
-	if d != 0 {
-		return 1, nil
+
+	result := map[bool]byte{
+		false: 0,
+		true:  1,
 	}
-	return d, nil
+	return result[d != 0], nil
 }
 
 // ReadByte reads byte from stream
@@ -83,8 +81,6 @@ func (r *Reader) ReadBits(n int) (uint64, error) {
 		if byt == 1 {
 			u |= 1
 		}
-
-		fmt.Printf("u: %b\n", u)
 		n--
 	}
 
